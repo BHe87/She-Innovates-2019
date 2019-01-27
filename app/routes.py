@@ -28,10 +28,10 @@ def success(name):
 	for text in soup.find_all('p'):
 	 	site_text.append(text.get_text())		
 	data = remove_parentheses(site_text)
-	return redirect(url_for('part2', topic=name, wiki = page))
+	return redirect(url_for('part2', topic=name, wiki=page))
 
 
-@app.route('/part2/<topic>')
+@app.route('/part2/<topic>/<wiki>')
 def part2(topic):
 	return render_template('part2.html', topic=topic)
 
