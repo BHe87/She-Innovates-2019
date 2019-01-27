@@ -18,24 +18,22 @@ def index():
 def login():
 	if request.method == 'POST':
 		topic = request.form['topic']
-		return redirect(url_for('success', name = topic))
+		return redirect(url_for('success', name=topic))
 	
 
 @app.route('/success/<name>')
 def success(name):
 	page = requests.get("https://en.wikipedia.org/wiki/%s" % name)
 	soup = BeautifulSoup(page.content, 'html.parser')
-	#site_text = []
 	for text in soup.find_all('p'):
 	 	site_text.append(text.get_text())		
 	data = remove_parentheses(site_text)
+	return redirect(url_for('part2', topic=name, wiki = page))
 
-	return redirect(url_for('part2'))
 
-
-@app.route('/part2')
-def part2():
-	return render_template('part2.html')
+@app.route('/part2/<topic>')
+def part2(topic):
+	return render_template('part2.html', topic=topic)
 
 
 @app.route('/question', methods = ['POST', 'GET'])
@@ -43,15 +41,13 @@ def respond():
 	if request.method == 'POST':
 		question = request.form['question']
 		#return 'Question: %s' % question
-		return get_response(question)
+		response = get_response(question)
+		return render_template('part2.html', response=response)
 
 
 def get_response(question):
 	parsed = TextBlob(question)
-
 	noun, adjective, verb = find_parts_of_speech(parsed)
-
-
 	return '%s %s %s' % (noun, adjective, verb)
 
 
@@ -59,8 +55,8 @@ def find_parts_of_speech(sentence):
 	noun = find_noun(sentence)
 	adjective = find_adjective(sentence)
 	verb = find_verb(sentence)
-
 	return noun, adjective, verb
+
 
 def find_noun(sentence):
 	noun = ''
@@ -70,6 +66,7 @@ def find_noun(sentence):
 			noun = word
 
 	return noun
+
 
 def find_adjective(sentence):
 	adjective = ''
