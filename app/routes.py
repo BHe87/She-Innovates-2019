@@ -43,7 +43,7 @@ def respond():
 	if request.method == 'POST':
 		question = request.form['question']
 		response = get_response(question)
-		return render_template('part2.html', topic=topic, wiki=site_text, response=response)
+		return render_template('part2.html', wiki=site_text, response=response)
 
 
 def get_response(question):
