@@ -7,6 +7,8 @@ import requests
 import re
 
 site_text = []
+data = []
+topic = ''
 
 @app.route('/')
 @app.route('/index')
@@ -23,32 +25,35 @@ def login():
 
 @app.route('/success/<name>')
 def success(name):
-	page = requests.get("https://en.wikipedia.org/wiki/%s" % name)
+	return redirect(url_for('part2', topic=name))
+
+
+@app.route('/part2/<topic>')
+def part2(topic):
+	page = requests.get("https://en.wikipedia.org/wiki/%s" % topic)
 	soup = BeautifulSoup(page.content, 'html.parser')
 	for text in soup.find_all('p'):
 	 	site_text.append(text.get_text())		
-	data = remove_parentheses(site_text)
-	return redirect(url_for('part2', topic=name, wiki=page))
-
-
-@app.route('/part2/<topic>/<wiki>')
-def part2(topic):
-	return render_template('part2.html', topic=topic)
+	data = remove_parentheses(site_text)	
+	return render_template('part2.html', topic=topic, wiki=site_text)
 
 
 @app.route('/question', methods = ['POST', 'GET'])
 def respond():
 	if request.method == 'POST':
 		question = request.form['question']
-		#return 'Question: %s' % question
 		response = get_response(question)
-		return render_template('part2.html', response=response)
+		return render_template('part2.html', topic=topic, wiki=site_text, response=response)
 
 
 def get_response(question):
 	parsed = TextBlob(question)
 	noun, adjective, verb = find_parts_of_speech(parsed)
-	return '%s %s %s' % (noun, adjective, verb)
+	for x in site_text:
+		if noun in x:
+			return x
+
+	return 'Question cannot be answered with the Wikipedia page :('
 
 
 def find_parts_of_speech(sentence):

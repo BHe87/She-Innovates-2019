@@ -13,11 +13,17 @@
     <body>
         <form name="part2" action="/question" method="POST">
         	What Exactly Do You Want To Know About {{ topic }}?<br>
-        	<input type="text" name='question'><br>
+        	<input type="text" name="question"><br>
         	<input type="submit" value="Submit">
         </form>
+        <form action="/index">
+            <input type="submit" value="Different Topic">
+        </form>
         <p>
-            {{ response }}<br>
+            {{ response }}
+            <br>
+            <br>
+            Wiki: <br>
             {{ wiki }}
         </p>
     </body>
